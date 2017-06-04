@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Rotating mesh - WebGL experiment - Configurator</title>
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <style>
+    /* STYLE */
+    
+    #info {
+        color: #000;
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        padding: 5px;
+    }
+    
+    a {
+        color: red;
+    }
+    
+    #configurator {
+        width: 100%;
+        height: 700px;
+    }
+    </style>
+</head>
+
+<body>
+    <!-- =========================================================================================== -->
+    <!-- CONTAINER -->
+    <!-- =========================================================================================== -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel col-md-8">
+                <div id="configurator" width="100%" height="400">
+                </div>
+                <div id="info">
+                    <a href="http://threejs.org" target="_blank">three.js</a> - orbit controls example
+                </div>
+            </div>
+            <div class="panel col-md-4">
+                <div class="row">
+                    <a id="target">
+                        Change color
+                    </a>
+                    <div id="hidegardecorps">
+                        Mask garde corps
+                    </div>
+                    <a id="gardecorps">Afficher garde corps</a>
+                    <br />
+                    <a onclick="showcube()">Show Cube 2 / </a>
+                    <a onclick="hidecube()">Hide Cube 2 / </a>
+                    <!-- <a onclick="changetexturecube()">Texture Cube 2 / </a> -->
+
+                </div>
+
+<nav>
+    <span>Choose color:</span>
+    <input type="button" value="White" onClick="mesh.traverse(function(child) {if(child instanceof THREE.Mesh){ child.material.color.setHex('0xffffff');}});" />
+    <input type="button" value="Black" onClick="mesh.traverse(function(child) {if(child instanceof THREE.Mesh){ child.material.color.setHex('0x2f3a4c');}});" />            
+    <input type="button" value="Green" onClick="mesh.traverse(function(child) {if(child instanceof THREE.Mesh){ child.material.color.setHex('0x44cc88');}});" />
+    <input type="button" value="Texture" onClick="changetexturecube();" >
+</nav>
+
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="name" class="col-sm-3 control-label">Forme</label>
+                        <div class="col-sm-9">
+                            <label class="radio-inline">
+                                <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">Cube
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">Sphere
+                            </label>
+                        </div>
+                    </div>
+                    <!-- form-group // -->
+                    <div class="form-group">
+                        <label for="name" class="col-sm-3 control-label">Texture</label>
+                        <div class="col-sm-9">
+                            <label class="radio-inline">
+                                <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">tourne à droite
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">tourne à gauche
+                            </label>
+                        </div>
+                    </div>
+                    <!-- form-group // -->
+                    <div class="form-group">
+                        <label for="tech" class="col-sm-3 control-label">Couleur</label>
+                        <div class="col-sm-3">
+                            <select class="form-control">
+                                <option value="">Droit</option>
+                                <option value="texnolog2">Quart tournant départ</option>
+                                <option value="texnolog3">Quart tournant milieu</option>
+                                <option value="texnolog3">Double quart tournant</option>
+                                <option value="texnolog3">Demi tour</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- form-group // -->
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <button type="submit" class="btn btn-primary">BUY</button>
+                        </div>
+                    </div>
+                    <!-- form-group // -->
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- =========================================================================================== -->
+    <!-- SCRIPT -->
+    <!-- =========================================================================================== -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!-- THREE JS -->
+    <!-- <script src="js/three.min.js"></script> -->
+    <script src="http://mrdoob.github.com/three.js/build/three.min.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <!-- <script src="js/PointerLockControls.js"></script> -->
+    <!-- <script src="js/OrthographicTrackballControls.js"></script> -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>

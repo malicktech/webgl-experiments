@@ -1,30 +1,72 @@
+// global vaiables
 var scene, controls, camera, renderer;
 
 container = document.getElementById('configurator');
 var WIDTH = $(container).width();
 var HEIGHT = $(container).height();
 
-var SPEED = 0.001;
+var SPEED = 0.0005;
 
-var cubeModel;
+var cubeModel, tearModel, tearModel2;
+
+
+
+$(document).ready(function() {
+    // jquery code here
+
+    /* =============================================================================================== 
+    LAUCH
+    =============================================================================================== */
+
+    init();
+    render();
+
+    /* =============================================================================================== 
+    EVENT
+    =============================================================================================== */
+
+    $("#target").click(function() {
+        // console.log("Handler for .click() called.");
+        // console.log(mesh.material[0]);
+        mesh.material[0].color.setHex(0xff0000);
+    });
+    $("#changeTexture").click(function() {
+        // console.log("Handler for .click() called.");
+        // console.log(mesh.material[0]);
+        mesh.material[0].color.setHex(0xff0000);
+    });
+    $("#hidegardecorps").click(function() {
+        // console.log(mesh.children);
+        mesh.visible = false;
+    });
+    $("#gardecorps").click(function() {
+        // console.log(mesh.children);
+        mesh.visible = true;
+    });
+
+    $('#radio_button').click(function() {
+        // if ($(this).is(':checked')) alert('is checked'); 
+        console.log('check-checky-check was changed');
+        $("input[name='name']:checked").val()
+    });
+
+});
 
 
 
 function init() {
     scene = new THREE.Scene();
-
-    initMesh();
-    initSphereModel();
-    initCube();
-    initCube2();
+    // initMesh();
+    // initSphereModel();
+    // initCube();
+    // initCube2();
+    initTearsModel();
+    initTearsModel2();
     initCamera();
     initLights();
     initRenderer();
 
     initControl();
-
-
-    // document.body.appendChild(renderer.domElement);
 }
 
 function initCamera() {
@@ -76,6 +118,37 @@ function initMesh() {
 }
 
 // Special callback to get a reference to the sphere
+function initTearsModel() {
+    loader.load(
+        '/webgl-experiments/blender-export/escalier_GC.json',
+        function(geometry, materials) {
+            var material = new THREE.MeshFaceMaterial(materials);
+            tearModel = new THREE.Mesh(geometry, material);
+            tearModel.scale.set(0.4, 0.4, 0.4);
+            tearModel.material[0].color.setHex(0x2f3a4c);
+            tearModel.material[1].color.setHex(0xECF400);
+            scene.add(tearModel);
+        });
+
+}
+
+function initTearsModel2() {
+    loader.load(
+        '/webgl-experiments/blender-export/escalier_M.json',
+        function(geometry, materials) {
+            // var material = new THREE.MeshFaceMaterial(materials);
+            var material = new THREE.MeshPhongMaterial({ transparent: false, map: THREE.ImageUtils.loadTexture('img/textures/Bois_Frene.jpg') });
+            material.side = THREE.DoubleSide;
+            tearModel2 = new THREE.Mesh(geometry, material);
+            tearModel2.scale.set(0.4, 0.4, 0.4);
+            scene.add(tearModel2);
+            console.log(tearModel2.material);
+        });
+}
+
+
+
+// Special callback to get a reference to the sphere
 function initSphereModel() {
     loader.load(
         '/webgl-experiments/blender-export/untitled2.json',
@@ -83,7 +156,6 @@ function initSphereModel() {
             var material = new THREE.MeshFaceMaterial(materials);
             sphereModel = new THREE.Mesh(geometry, material);
             sphereModel.scale.set(0.8, 0.8, 0.8);
-            // sphereModel.position.y += 0.5;
             scene.add(sphereModel);
         });
 }
@@ -100,11 +172,9 @@ function rotateMesh() {
 }
 
 
-
-
 function initCube2() {
     var geometry = new THREE.CubeGeometry(3, 3, 3);
-    var material = new THREE.MeshPhongMaterial({ transparent: false, map: THREE.ImageUtils.loadTexture('Bois_Frene.jpg') });
+    var material = new THREE.MeshPhongMaterial({ transparent: false, map: THREE.ImageUtils.loadTexture('img/textures/Bois_Frene.jpg') });
     material.side = THREE.DoubleSide;
     cubeModel = new THREE.Mesh(geometry, material);
     cubeModel.scale.x = cube.scale.y = cube.scale.z = 0.5;
@@ -130,35 +200,53 @@ function rotateCube() {
     cube.rotation.z -= SPEED * 3;
 }
 
+function rotateTearsModel() {
+    tearModel.rotation.x -= SPEED * 2;
+    tearModel.rotation.y -= SPEED;
+    tearModel.rotation.z -= SPEED * 3;
+
+    tearModel2.rotation.x -= SPEED * 2;
+    tearModel2.rotation.y -= SPEED;
+    tearModel2.rotation.z -= SPEED * 3;
+}
+
 function render() {
     requestAnimationFrame(render);
-    rotateMesh();
-    rotateCube();
+    // rotateMesh();
+    // rotateCube();
+    rotateTearsModel();
     renderer.render(scene, camera);
 }
 
-init();
-render();
 
+function changetexturecube() {
+    text = THREE.ImageUtils.loadTexture('imagee/textures/Metal_Steel_Textured.jpg');
+    cubeModel.traverse(function(child) {
+        if (child instanceof THREE.Mesh) {
+            child.material.map = text;
+            child.material.needsUpdate = true;
+            child.geometry.buffersNeedUpdate = true;
+            child.geometry.uvsNeedUpdate = true;
+        }
+    });
+}
 
-$("#target").click(function() {
-    // console.log("Handler for .click() called.");
-    // console.log(mesh.material[0]);
-    mesh.material[0].color.setHex(0xff0000);
-});
-$("#changeTexture").click(function() {
-    // console.log("Handler for .click() called.");
-    // console.log(mesh.material[0]);
-    mesh.material[0].color.setHex(0xff0000);
-});
-$("#hidegardecorps").click(function() {
-    // console.log(mesh.children);
-    mesh.visible = false;
-});
-$("#gardecorps").click(function() {
-    // console.log(mesh.children);
-    mesh.visible = true;
-});
+function doHvSelect(clickedelement, texture) {
+
+    console.log(clickedelement);
+    $('#texture li').removeClass('select').addClass('disable');
+    $(clickedelement).parent().removeClass('disable').addClass('select');
+    text = THREE.ImageUtils.loadTexture('img/textures/' + texture);
+    tearModel2.traverse(function(child) {
+        if (child instanceof THREE.Mesh) {
+            child.material.map = text;
+            child.material.needsUpdate = true;
+            child.geometry.buffersNeedUpdate = true;
+            child.geometry.uvsNeedUpdate = true;
+        }
+    });
+};
+
 
 function showcube() {
     cubeModel.visible = true;
@@ -166,21 +254,4 @@ function showcube() {
 
 function hidecube() {
     cubeModel.visible = false;
-};
-
-function changetexturecube() {
-     console.log(cubeModel.material);
-    // cubeModel.material.map.image = THREE.ImageUtils.loadTexture("Metal_Steel_Textured.jpg");
-    // cubeModel.material.needsUpdate = true;
-
-     text = THREE.ImageUtils.loadTexture( 'Metal_Steel_Textured.jpg' );
-        cubeModel.traverse(function(child) {
-            if(child instanceof THREE.Mesh){
-                //alert("works");
-                child.material.map = text;
-                child.material.needsUpdate = true;
-                child.geometry.buffersNeedUpdate = true;
-                child.geometry.uvsNeedUpdate = true;
-            }
-        });
 };
